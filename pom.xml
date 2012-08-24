@@ -13,6 +13,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hive.version>0.9.0</hive.version>
     </properties>
 
 
@@ -74,15 +75,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hadoop.hive</groupId>
+            <groupId>org.apache.hive</groupId>
             <artifactId>hive-serde</artifactId>
-            <version>0.7.1-cdh3u3</version>
+            <version>${hive.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hadoop.hive</groupId>
+            <groupId>org.apache.hive</groupId>
             <artifactId>hive-exec</artifactId>
-            <version>0.7.1-cdh3u3</version>
+            <version>${hive.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
