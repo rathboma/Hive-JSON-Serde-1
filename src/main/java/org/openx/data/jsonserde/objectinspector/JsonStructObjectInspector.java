@@ -35,24 +35,30 @@ public class JsonStructObjectInspector extends StandardStructObjectInspector {
 
     @Override
     public Object getStructFieldData(Object data, StructField fieldRef) {
-    if (data == null) {
-      return null;
+        if (data == null) {
+          return null;
+        }
+        JSONObject obj = (JSONObject) data;
+        MyField f = (MyField) fieldRef;
+
+        int fieldID = f.getFieldID();
+        assert (fieldID >= 0 && fieldID < fields.size());
+        return doGet(obj, f.getFieldName());
     }
-    JSONObject obj = (JSONObject) data;
-    MyField f = (MyField) fieldRef; 
 
-    int fieldID = f.getFieldID();
-    assert (fieldID >= 0 && fieldID < fields.size());
-
-    try {
-        Object result = obj.get(f.getFieldName());
-        //if(!f.getFieldObjectInspector().getTypeName().equalsIgnoreCase(result.getClass().getName())) return null;
+    private Object doGet(JSONObject obj, String key) {
+        Object result = null;
+        try {
+            result = obj.get(key);
+        } catch (JSONException ex) {
+            try {
+                result = obj.get(key.replaceAll("_", "-"));
+            } catch (JSONException ex2) {
+                // null is ok
+            }
+        }
         return result;
-    } catch (JSONException ex) {
-        // if key does not exist
-        return null; 
     }
-  }
 
     static List<Object> values = new ArrayList<Object>();
     @Override
@@ -61,19 +67,7 @@ public class JsonStructObjectInspector extends StandardStructObjectInspector {
         values.clear();
         
         for(int i =0; i< fields.size(); i ++) {
-            Object result = null;
-            try {
-                result = jObj.get(fields.get(i).getFieldName());
-                 } catch (JSONException ex) {
-                    try{
-                        result = jObj.get(fields.get(i).getFieldName().replaceAll("_", "-"));
-                    } catch(JSONException ex2){
-                        
-                    }
-                    // this can happen if a key doesn't exist in the json object
-                    // not totally out of the bounds of imagination for log data.
-                }
-                values.add(result);
+            values.add(doGet(jObj, fields.get(i).getFieldName()));
         }
 
         return values;
